@@ -1,6 +1,6 @@
 "use client";
 
-import { Order } from "@/types";
+import { Order } from "@/lib/supabase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, User } from "lucide-react";
@@ -20,7 +20,7 @@ export function OrderList({ orders }: OrderListProps) {
               <CardTitle className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <User className="h-4 w-4" />
-                  <span>{order.buyer?.name || "Unknown Buyer"}</span>
+                  <span>{order.buyer?.full_name || "Unknown Buyer"}</span>
                 </div>
                 <Badge variant="outline">{order.status}</Badge>
               </CardTitle>
@@ -32,7 +32,7 @@ export function OrderList({ orders }: OrderListProps) {
                   <span>{order.region?.name || "No Region"}</span>
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  Seller: {order.seller?.name || "Unknown Seller"}
+                  Seller: {order.seller?.full_name || "Unknown Seller"}
                 </div>
                 <div className="text-sm text-muted-foreground">
                   Created: {new Date(order.created_at).toLocaleDateString()}
