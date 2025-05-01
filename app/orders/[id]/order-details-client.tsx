@@ -145,20 +145,6 @@ export function OrderDetailsClient({
                     </div>
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">
-                        Buyer
-                      </p>
-                      <p className="font-medium">
-                        {order.buyer?.full_name || "N/A"}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-full bg-primary/10">
-                      <User className="h-4 w-4 text-primary" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">
                         Seller
                       </p>
                       <p className="font-medium">

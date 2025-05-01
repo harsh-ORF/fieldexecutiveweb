@@ -98,6 +98,7 @@ export async function getOrders() {
       truck_details:truck_details(order_id, truck_number, driver_name, driver_number)
     `
     )
+    .neq("status", "completed") // Filter out completed orders
     .order("created_at", { ascending: false });
 
   if (error) {

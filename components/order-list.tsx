@@ -11,9 +11,12 @@ interface OrderListProps {
 }
 
 export function OrderList({ orders }: OrderListProps) {
+  // Filter out completed orders
+  const filteredOrders = orders.filter((order) => order.status !== "completed");
+
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {orders.map((order) => (
+      {filteredOrders.map((order) => (
         <Link key={order.id} href={`/orders/${order.id}`}>
           <Card className="h-full transition-colors hover:bg-muted/50">
             <CardHeader>

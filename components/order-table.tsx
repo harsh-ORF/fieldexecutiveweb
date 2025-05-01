@@ -109,6 +109,8 @@ export function OrderTable({ onOrderClick }: OrderTableProps) {
 
   const sortedAndFilteredOrders = orders
     .filter((order) => {
+      if (order.status === "completed") return false;
+
       const searchLower = searchTerm.toLowerCase();
       return (
         (order.buyer?.full_name?.toLowerCase() || "").includes(searchLower) ||
