@@ -161,6 +161,20 @@ export async function uploadOrderMedia(
   console.log("Description:", description);
   console.log("Uploaded by:", uploadedBy);
 
+  // Validate file type
+  const allowedImageTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/gif",
+    "image/webp",
+  ];
+  const allowedVideoTypes = ["video/mp4", "video/webm", "video/quicktime"];
+
+  if (![...allowedImageTypes, ...allowedVideoTypes].includes(file.type)) {
+    console.error("Invalid file type:", file.type);
+    return null;
+  }
+
   // First upload the file to storage
   const fileExt = file.name.split(".").pop();
   const fileName = `${orderId}/${Math.random()
@@ -190,7 +204,7 @@ export async function uploadOrderMedia(
   console.log("Generated public URL:", mediaUrl);
 
   // Determine media type based on file extension
-  const mediaType = file.type.startsWith("image/") ? "image" : "document";
+  const mediaType = file.type.startsWith("video/") ? "video" : "image";
 
   console.log("Media type:", mediaType);
 
@@ -214,6 +228,12 @@ export async function uploadOrderMedia(
   if (error) {
     console.error("Error creating order media entry:", error);
     return null;
+  }
+
+  // Also insert into region_media table
+  const regionMediaData = await insertRegionMedia(orderId, mediaUrl);
+  if (!regionMediaData) {
+    console.error("Failed to insert into region_media table");
   }
 
   console.log("Successfully inserted into order_media table:", data);
@@ -262,4 +282,46 @@ export async function deleteOrderMedia(id: string) {
   }
 
   return true;
+}
+
+// Helper function to insert media into region_media table
+export async function insertRegionMedia(orderId: string, mediaUrl: string) {
+  // First get the order to get region_id and nut_quality
+  const { data: order, error: orderError } = await supabase
+    .from("orders")
+    .select("region_id, nut_quality")
+    .eq("id", orderId)
+    .single();
+
+  if (orderError || !order) {
+    console.error("Error fetching order:", orderError);
+    return null;
+  }
+
+  // Map nut_quality to type
+  const typeMap: Record<string, string> = {
+    single_filter: "single",
+    double_filter: "double",
+    mixed_filter: "mixed",
+  };
+
+  const type = typeMap[order.nut_quality] || "single";
+
+  // Insert into region_media table
+  const { data, error } = await supabase
+    .from("region_media")
+    .insert({
+      region_id: order.region_id,
+      url: mediaUrl,
+      type: type,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error inserting region media:", error);
+    return null;
+  }
+
+  return data;
 }

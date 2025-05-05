@@ -19,6 +19,8 @@ import { MediaGallery } from "@/components/media-gallery";
 import { Badge } from "@/components/ui/badge";
 import { Clock } from "lucide-react";
 import { toast } from "sonner";
+import { DailyLoadingInput } from "@/components/daily-loading-input";
+import { supabase } from "@/lib/supabase";
 
 interface OrderDetailsClientProps {
   params: {
@@ -182,6 +184,40 @@ export function OrderDetailsClient({
                 <MediaUpload
                   orderId={order.id}
                   onSuccess={handleMediaUploadSuccess}
+                />
+              </CardContent>
+            </Card>
+
+            {/* Daily Loading Input */}
+            <Card className="shadow-sm">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-lg">Loading Progress</CardTitle>
+                <CardDescription>
+                  Add daily loading quantities for this order
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="px-6">
+                <DailyLoadingInput
+                  dailyLoading={order.daily_loading || []}
+                  orderId={order.id}
+                  onUpdate={async (newLoading) => {
+                    try {
+                      const { error } = await supabase
+                        .from("orders")
+                        .update({ daily_loading: newLoading })
+                        .eq("id", order.id);
+
+                      if (error) throw error;
+
+                      // Refresh the order data
+                      const updatedOrder = await getOrder(order.id);
+                      setOrder(updatedOrder);
+                      toast.success("Loading data updated successfully");
+                    } catch (error) {
+                      console.error("Error updating loading data:", error);
+                      toast.error("Failed to update loading data");
+                    }
+                  }}
                 />
               </CardContent>
             </Card>

@@ -89,7 +89,7 @@ export function MediaUpload({ orderId, onSuccess }: MediaUploadProps) {
           <Input
             id="media"
             type="file"
-            accept="image/*"
+            accept="image/*,video/*"
             onChange={handleFileChange}
             className="cursor-pointer"
             multiple
@@ -98,48 +98,51 @@ export function MediaUpload({ orderId, onSuccess }: MediaUploadProps) {
             Click Photo
           </Button>
           <input
-            ref={cameraInputRef}
             type="file"
+            ref={cameraInputRef}
             accept="image/*"
             capture="environment"
-            className="hidden"
             onChange={handleCameraCapture}
+            className="hidden"
           />
         </div>
       </div>
 
       {files.length > 0 && (
-        <div className="grid grid-cols-2 gap-2">
-          {files.map((file, index) => (
-            <div key={index} className="relative group">
-              <div className="aspect-square rounded-lg overflow-hidden border">
-                {file.type.startsWith("image/") ? (
-                  <Image
+        <div className="space-y-2">
+          <Label>Preview</Label>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            {files.map((file, index) => (
+              <div
+                key={index}
+                className="relative aspect-square rounded-lg overflow-hidden border bg-muted"
+              >
+                {file.type.startsWith("video/") ? (
+                  <video
                     src={URL.createObjectURL(file)}
-                    alt={file.name}
-                    width={200}
-                    height={200}
                     className="object-cover w-full h-full"
+                    controls
                   />
                 ) : (
-                  <div className="flex items-center justify-center h-full bg-muted">
-                    <span className="text-sm text-muted-foreground">
-                      {file.name}
-                    </span>
-                  </div>
+                  <Image
+                    src={URL.createObjectURL(file)}
+                    alt={`Preview ${index + 1}`}
+                    fill
+                    className="object-cover"
+                  />
                 )}
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="icon"
+                  className="absolute top-2 right-2 h-6 w-6"
+                  onClick={() => removeFile(index)}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
               </div>
-              <button
-                type="button"
-                onClick={() => removeFile(index)}
-                className="absolute top-1 right-1 p-1 rounded-full bg-white shadow text-red-600 border border-red-200 z-10"
-                aria-label="Remove image"
-                title="Remove image"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
 
