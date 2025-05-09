@@ -210,6 +210,12 @@ export function OrderTable({ onOrderClick }: OrderTableProps) {
                   </span>
                   <span>{getNutQualityBadge(order.nut_quality)}</span>
                 </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-muted-foreground">
+                    Delivery Location
+                  </span>
+                  <span>{order.delivery_location || "Not Available"}</span>
+                </div>
                 {order.truck_details && order.truck_details.length > 0 && (
                   <div className="pt-2">
                     <div className="text-sm font-medium text-muted-foreground mb-1">

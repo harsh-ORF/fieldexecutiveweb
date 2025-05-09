@@ -66,6 +66,7 @@ export type Order = {
   daily_loading: number[] | null;
   region_id: string | null;
   payment_status: string;
+  delivery_location: string | null;
   buyer?: Profile;
   seller?: Profile;
   region?: {
@@ -98,7 +99,8 @@ export async function getOrders() {
       truck_details:truck_details(order_id, truck_number, driver_name, driver_number)
     `
     )
-    .neq("status", "completed") // Filter out completed orders
+    .neq("status", "completed")
+    .neq("status", "rejected")
     .order("created_at", { ascending: false });
 
   if (error) {
